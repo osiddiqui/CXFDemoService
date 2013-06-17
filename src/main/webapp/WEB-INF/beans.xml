@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:cxf="http://cxf.apache.org/core" 
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://cxf.apache.org/jaxrs
+    http://cxf.apache.org/schemas/jaxrs.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+  <import resource="classpath:META-INF/cxf/cxf.xml" />
+  <import resource="classpath:META-INF/cxf/cxf-servlet.xml" /> 
+
+  <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" />
+  
+   <bean id="propertyConfigurer"
+        class="com.cxf.spring.RuntimeEnvironmentPropertiesConfigurer">
+        <property name="propertyLocation" value="WEB-INF/classes/" />
+        <property name="environmentKey" value="service_env" />
+        <property name="fileName" value="demoservice" />
+        <property name="defaultEnvironment" value="dev" />
+        <property name="environments">
+            <list>
+                <value>dev</value>
+                <value>test</value>
+                <value>prod</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="xmlBeanProvider" class="org.apache.cxf.jaxrs.provider.xmlbeans.XMLBeansElementProvider"/>
+    <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.xmlbeans.XMLBeansJSONProvider"/>
+    <bean id="customerService" class="com.cxf.demo.CustomerService">
+    </bean>
+    <jaxrs:server id="services" address="/">
+	    <jaxrs:serviceBeans>
+	      <ref bean="customerService" /> 
+	    </jaxrs:serviceBeans>
+	    <jaxrs:providers>
+	        <ref bean="xmlBeanProvider"/>
+	        <ref bean="jsonProvider"/>
+	    </jaxrs:providers>
+	    <jaxrs:features>
+	    </jaxrs:features>
+    </jaxrs:server>
+    
+    <security:http>
+        <security:http-basic></security:http-basic>
+        <security:intercept-url pattern="/**" access="ROLE_USER" />
+    </security:http>
+
+    <security:authentication-manager  alias="authenticationManager">
+        <security:authentication-provider>
+          <security:user-service>             
+            <security:user name="bob" password="bobspassword" authorities="ROLE_USER" />
+          </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>  
+    
+</beans>

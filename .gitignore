@@ -1,0 +1,10 @@
+
+
+# Eclipse project metadata
+.project
+
+.settings
+.classpath
+target
+build
+dist
