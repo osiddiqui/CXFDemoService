@@ -79,7 +79,9 @@ public class CustomerService {
         return r;
     }
 
+    @GET
     @Path("/orders/{orderId}/")
+    @Produces({"application/json"})
     public Order getOrder(@PathParam("orderId") String orderId) {
         System.out.println("----invoking getOrder, Order id is: " + orderId);
         long idNumber = Long.parseLong(orderId);
